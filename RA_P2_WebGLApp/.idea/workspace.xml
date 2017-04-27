@@ -21,8 +21,8 @@
       <file leaf-file-name="webGLApp.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/webGLApp.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-131">
-              <caret line="166" column="0" lean-forward="true" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
+            <state relative-caret-position="485">
+              <caret line="254" column="55" lean-forward="false" selection-start-line="254" selection-start-column="55" selection-end-line="254" selection-end-column="55" />
               <folding>
                 <element signature="n#script#2;n#head#0;n#html#0;n#!!top" expanded="false" />
                 <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
@@ -34,10 +34,10 @@
                 <element signature="e#5491#5562#0" expanded="false" />
                 <element signature="e#5603#5675#0" expanded="false" />
                 <element signature="e#5689#5856#0" expanded="false" />
-                <element signature="e#8416#8717#0" expanded="false" />
-                <element signature="e#8748#8900#0" expanded="false" />
-                <element signature="e#8983#9652#0" expanded="false" />
-                <element signature="e#9692#9755#0" expanded="false" />
+                <element signature="e#8542#8843#0" expanded="false" />
+                <element signature="e#8874#9026#0" expanded="false" />
+                <element signature="e#9109#9778#0" expanded="false" />
+                <element signature="e#9818#9881#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -168,12 +168,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1493274469657</updated>
-      <workItem from="1493274470838" duration="3492000" />
+      <workItem from="1493274470838" duration="3649000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3492000" />
+    <option name="totallyTimeSpent" value="3649000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="938" y="0" width="990" height="1038" extended-state="0" />
@@ -232,8 +232,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webGLApp.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-131">
-          <caret line="166" column="0" lean-forward="true" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
+        <state relative-caret-position="485">
+          <caret line="254" column="55" lean-forward="false" selection-start-line="254" selection-start-column="55" selection-end-line="254" selection-end-column="55" />
           <folding>
             <element signature="n#script#2;n#head#0;n#html#0;n#!!top" expanded="false" />
             <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
@@ -245,10 +245,10 @@
             <element signature="e#5491#5562#0" expanded="false" />
             <element signature="e#5603#5675#0" expanded="false" />
             <element signature="e#5689#5856#0" expanded="false" />
-            <element signature="e#8416#8717#0" expanded="false" />
-            <element signature="e#8748#8900#0" expanded="false" />
-            <element signature="e#8983#9652#0" expanded="false" />
-            <element signature="e#9692#9755#0" expanded="false" />
+            <element signature="e#8542#8843#0" expanded="false" />
+            <element signature="e#8874#9026#0" expanded="false" />
+            <element signature="e#9109#9778#0" expanded="false" />
+            <element signature="e#9818#9881#0" expanded="false" />
           </folding>
         </state>
       </provider>

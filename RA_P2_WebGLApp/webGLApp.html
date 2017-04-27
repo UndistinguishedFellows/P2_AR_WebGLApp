@@ -226,15 +226,15 @@
                 if(currentlyPressed[38])
                 {
                     //Up cursor
-                    if(fov > 15)
-                        fov--;
+                    if(fov < 90)
+                        fov++;
                 }
 
                 if(currentlyPressed[40])
                 {
                     //Down cursor
-                    if(fov < 90)
-                        fov++;
+                    if(fov > 15)
+                        fov--;
                 }
 
                 if(currentlyPressed[37])
@@ -250,6 +250,9 @@
                 if(currentlyPressed[82])
                 {
                     //R key
+                    //TODO: More resets
+                    fov = 45;
+                    mat4.identity(mouseRotationMatrix);
                 }
             }
 
