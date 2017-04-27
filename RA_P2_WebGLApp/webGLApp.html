@@ -10,10 +10,11 @@
             attribute vec3 aVertexPosition;
 
             uniform mat4 uMVMatrix;
+            uniform mat4 uVMatrix;
             uniform mat4 uPMatrix;
 
             void main(void) {
-                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
             }
         </script>
         
@@ -97,16 +98,21 @@
                 gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
                 shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+                shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
                 shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
             }
 
 
             var mvMatrix = mat4.create();
             var pMatrix = mat4.create();
+            var vMatrix = mat4.create();
+            mat4.identity(vMatrix);
 
             function sendMatricesToShader() {
                 gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+                //TMP
+                gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
             }
 
 
@@ -138,7 +144,6 @@
                 mat4.identity(mvMatrix);
 
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
-                mat4.multiply(mvMatrix, mouseRotationMatrix);
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -183,9 +188,6 @@
                 mouseDown = false;
             }
 
-            var mouseRotationMatrix = mat4.create();
-            mat4.identity(mouseRotationMatrix);
-
             function handleMouseMove(event){
                 if(!mouseDown)
                     return;
@@ -203,13 +205,15 @@
                     mat4.identity(newRotationMat);
                     mat4.rotate(newRotationMat, deg2Rad(deltaX/10), [0, 1, 0]);
                     mat4.rotate(newRotationMat, deg2Rad(deltaY/10), [1, 0, 0]);
-                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
+                    mat4.multiply(newRotationMat, vMatrix, vMatrix);
 
                 }
 
                 if(mouseButtons[1])
                 {
                     //Mid button
+                    vec3.translate(keysTranslation, [-deltaX/20, deltaY/20, 0]);
+
                 }
 
                 if(mouseButtons[2])
@@ -252,7 +256,7 @@
                     //R key
                     //TODO: More resets
                     fov = 45;
-                    mat4.identity(mouseRotationMatrix);
+                    mat4.identity(vMatrix);
                 }
             }
 

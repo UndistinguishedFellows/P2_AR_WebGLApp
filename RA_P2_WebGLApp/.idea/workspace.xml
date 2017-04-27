@@ -21,23 +21,24 @@
       <file leaf-file-name="webGLApp.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/webGLApp.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="485">
-              <caret line="254" column="55" lean-forward="false" selection-start-line="254" selection-start-column="55" selection-end-line="254" selection-end-column="55" />
+            <state relative-caret-position="414">
+              <caret line="78" column="0" lean-forward="true" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
               <folding>
                 <element signature="n#script#2;n#head#0;n#html#0;n#!!top" expanded="false" />
                 <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
-                <element signature="e#937#1309#0" expanded="false" />
-                <element signature="e#1350#2467#0" expanded="false" />
-                <element signature="e#2537#3502#0" expanded="false" />
-                <element signature="e#3633#3816#0" expanded="false" />
-                <element signature="e#3917#4447#0" expanded="false" />
-                <element signature="e#5491#5562#0" expanded="false" />
-                <element signature="e#5603#5675#0" expanded="false" />
-                <element signature="e#5689#5856#0" expanded="false" />
-                <element signature="e#8542#8843#0" expanded="false" />
-                <element signature="e#8874#9026#0" expanded="false" />
-                <element signature="e#9109#9778#0" expanded="false" />
-                <element signature="e#9818#9881#0" expanded="false" />
+                <element signature="e#983#1355#0" expanded="false" />
+                <element signature="e#1396#2513#0" expanded="false" />
+                <element signature="e#2583#3645#0" expanded="false" />
+                <element signature="e#3853#4141#0" expanded="false" />
+                <element signature="e#4242#4772#0" expanded="false" />
+                <element signature="e#4892#5599#0" expanded="false" />
+                <element signature="e#5754#5825#0" expanded="false" />
+                <element signature="e#5866#5938#0" expanded="false" />
+                <element signature="e#5952#6119#0" expanded="false" />
+                <element signature="e#8749#9050#0" expanded="false" />
+                <element signature="e#9081#9233#0" expanded="false" />
+                <element signature="e#9316#9985#0" expanded="false" />
+                <element signature="e#10025#10088#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -103,7 +104,10 @@
     <property name="js.eslint.eslintPackage" value="" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JavaScript Debug.webGLApp.html">
+    <configuration default="false" name="webGLApp.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/RA_P2_WebGLApp/webGLApp.html">
+      <method />
+    </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <method />
     </configuration>
@@ -157,6 +161,14 @@
       <recursive>false</recursive>
       <method />
     </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.webGLApp.html" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.webGLApp.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -168,12 +180,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1493274469657</updated>
-      <workItem from="1493274470838" duration="3649000" />
+      <workItem from="1493274470838" duration="5606000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3649000" />
+    <option name="totallyTimeSpent" value="5606000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="938" y="0" width="990" height="1038" extended-state="0" />
@@ -187,7 +199,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39955604" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -205,7 +217,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -232,23 +244,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webGLApp.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="485">
-          <caret line="254" column="55" lean-forward="false" selection-start-line="254" selection-start-column="55" selection-end-line="254" selection-end-column="55" />
+        <state relative-caret-position="414">
+          <caret line="78" column="0" lean-forward="true" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
           <folding>
             <element signature="n#script#2;n#head#0;n#html#0;n#!!top" expanded="false" />
             <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="e#937#1309#0" expanded="false" />
-            <element signature="e#1350#2467#0" expanded="false" />
-            <element signature="e#2537#3502#0" expanded="false" />
-            <element signature="e#3633#3816#0" expanded="false" />
-            <element signature="e#3917#4447#0" expanded="false" />
-            <element signature="e#5491#5562#0" expanded="false" />
-            <element signature="e#5603#5675#0" expanded="false" />
-            <element signature="e#5689#5856#0" expanded="false" />
-            <element signature="e#8542#8843#0" expanded="false" />
-            <element signature="e#8874#9026#0" expanded="false" />
-            <element signature="e#9109#9778#0" expanded="false" />
-            <element signature="e#9818#9881#0" expanded="false" />
+            <element signature="e#983#1355#0" expanded="false" />
+            <element signature="e#1396#2513#0" expanded="false" />
+            <element signature="e#2583#3645#0" expanded="false" />
+            <element signature="e#3853#4141#0" expanded="false" />
+            <element signature="e#4242#4772#0" expanded="false" />
+            <element signature="e#4892#5599#0" expanded="false" />
+            <element signature="e#5754#5825#0" expanded="false" />
+            <element signature="e#5866#5938#0" expanded="false" />
+            <element signature="e#5952#6119#0" expanded="false" />
+            <element signature="e#8749#9050#0" expanded="false" />
+            <element signature="e#9081#9233#0" expanded="false" />
+            <element signature="e#9316#9985#0" expanded="false" />
+            <element signature="e#10025#10088#0" expanded="false" />
           </folding>
         </state>
       </provider>
