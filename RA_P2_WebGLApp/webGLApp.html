@@ -126,28 +126,165 @@
                 triangleVertexPositionBuffer.numItems = 3;
             }
 
-
+            var fov = 45;
+            var zNear = 0.1;
+            var zFar = 100.0;
             function drawScene() {
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+                mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
 
                 mat4.identity(mvMatrix);
 
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.multiply(mvMatrix, mouseRotationMatrix);
+
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 sendMatricesToShader();
                 gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
             }
 
+            //-------------------------------
+            //HandleInput
 
+            var currentlyPressed = {};
+            function handleKeyDown(event){
+                currentlyPressed[event.keyCode] = true;
+            }
+
+            function handleKeyUp(event){
+                currentlyPressed[event.keyCode] = true;
+            }
+
+            /* Mouse codes:
+                * LeftMouse: event button 0.
+                * MidMouse: event button 1.
+                * RightMouse: event button 2.
+
+             */
+
+            var lastMouseX = null;
+            var lastMouseY = null;
+
+            var mouseDown = false;
+            var mouseButtons = {};
+            function handleMouseDown(event){
+                mouseButtons[event.button] = true;
+                mouseDown = true;
+
+                lastMouseX = event.clientX;
+                lastMouseY = event.clientY;
+            }
+
+            function handleMouseUp(event){
+                mouseButtons[event.button] = false;
+                mouseDown = false;
+            }
+
+            var mouseRotationMatrix = mat4.create();
+            mat4.identity(mouseRotationMatrix);
+
+            function handleMouseMove(event){
+                if(!mouseDown)
+                    return;
+
+                var newX = event.clientX;
+                var newY = event.clientY;
+                var deltaX = lastMouseX - newX;
+                var deltaY = lastMouseY - newY;
+
+                if(mouseButtons[0])
+                {
+                    //Left button
+
+                    var newRotationMat = mat4.create();
+                    mat4.identity(newRotationMat);
+                    mat4.rotate(newRotationMat, deg2Rad(deltaX/10), [0, 1, 0]);
+                    mat4.rotate(newRotationMat, deg2Rad(deltaY/10), [1, 0, 0]);
+                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
+
+                }
+
+                if(mouseButtons[1])
+                {
+                    //Mid button
+                }
+
+                if(mouseButtons[2])
+                {
+                    //Right button
+                }
+
+                lastMouseX = newX;
+                lastMouseY = newY;
+            }
+
+
+            function handleKeys(){
+                if(currentlyPressed[38])
+                {
+                    //Up cursor
+                    /*var newRotationMat = mat4.create();
+                    mat4.identity(newRotationMat);
+                    mat4.translate(newRotationMat, [0, 0.5, 0]);
+                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
+                */}
+
+                if(currentlyPressed[40])
+                {
+                    //Down cursor
+                    /*var newRotationMat = mat4.create();
+                    mat4.identity(newRotationMat);
+                    mat4.translate(newRotationMat, [0, -0.5, 0]);
+                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
+                */}
+
+                if(currentlyPressed[37])
+                {
+                    //Left cursor
+                }
+
+                if(currentlyPressed[39])
+                {
+                    //Right cursor
+                }
+            }
+
+            //-------------------------------
+
+            var lastTime = 0;
+            var rotObject = 0;
+            function incrRotation(degrees) {
+                var timeNow = new Date().getTime(); //Ms
+                if(lastTime != 0)
+                {
+                    var elapsedTime = timeNow - lastTime;
+                    rotObject += (degrees * elapsedTime) / 1000;
+                }
+                lastTime = timeNow;
+            }
+
+            function reDraw(){
+                requestAnimFrame(reDraw);
+                handleKeys();
+                incrRotation(45.0);
+                drawScene();
+            }
+
+            //-------------------------------
 
             function webGLStart() {
                 var canvas = document.getElementById("webGL-canvas");
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
+
+                document.onkeydown = handleKeyDown;
+                document.onkeyup = handleKeyUp;
+                canvas.onmousedown = handleMouseDown;
+                document.onmouseup = handleMouseUp;
+                document.onmousemove = handleMouseMove;
 
                 initGL(canvas);
                 initShaders();
@@ -156,7 +293,11 @@
                 gl.clearColor(0.0, 0.0, 0.0, 1.0);
                 gl.enable(gl.DEPTH_TEST);
 
-                drawScene();
+                reDraw();
+            }
+
+            function deg2Rad(degrees) {
+                return degrees * Math.PI / 180;
             }
 
         </script>
