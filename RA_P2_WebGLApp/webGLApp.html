@@ -155,7 +155,7 @@
             }
 
             function handleKeyUp(event){
-                currentlyPressed[event.keyCode] = true;
+                currentlyPressed[event.keyCode] = false;
             }
 
             /* Mouse codes:
@@ -226,20 +226,16 @@
                 if(currentlyPressed[38])
                 {
                     //Up cursor
-                    /*var newRotationMat = mat4.create();
-                    mat4.identity(newRotationMat);
-                    mat4.translate(newRotationMat, [0, 0.5, 0]);
-                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
-                */}
+                    if(fov > 15)
+                        fov--;
+                }
 
                 if(currentlyPressed[40])
                 {
                     //Down cursor
-                    /*var newRotationMat = mat4.create();
-                    mat4.identity(newRotationMat);
-                    mat4.translate(newRotationMat, [0, -0.5, 0]);
-                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
-                */}
+                    if(fov < 90)
+                        fov++;
+                }
 
                 if(currentlyPressed[37])
                 {
@@ -249,6 +245,11 @@
                 if(currentlyPressed[39])
                 {
                     //Right cursor
+                }
+
+                if(currentlyPressed[82])
+                {
+                    //R key
                 }
             }
 
