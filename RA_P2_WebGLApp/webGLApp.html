@@ -144,6 +144,7 @@
                 mat4.identity(mvMatrix);
 
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
