@@ -8,29 +8,30 @@
 
         <script id="shader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
-            //attribute vec2 aTexCoords;
+            attribute vec2 aTexCoords;
 
             uniform mat4 uMVMatrix;
             uniform mat4 uVMatrix;
             uniform mat4 uPMatrix;
 
-            //varying vec2 texCoords;
+            varying vec2 texCoords;
 
             void main(void) {
                 gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-                //texCoords = aTexCoords;
+                texCoords = aTexCoords;
             }
         </script>
         
         <script id="shader-fs" type="x-shader/x-fragment">
             precision mediump float;
 
-            //varying vec2 texCoords;
+            varying vec2 texCoords;
             //uniform sampler2D texture;
 
             void main(void) {
-                gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-                //gl_FragColor = texture2D(texture, texCoords);
+                gl_FragColor = vec4(texCoords.x, texCoords.y, 0.0, 1.0);
+                //gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                //gl_FragColor = texture2D(texture, );
             }
         </script>
         
@@ -111,8 +112,8 @@
 
                 shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
                 gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-                //shaderProgram.uvsAttribute = gl.getAttribLocation(shaderProgram, "aTexCoords");
-                //gl.enableVertexAttribArray(shaderProgram.uvsAttribute);
+                shaderProgram.uvsAttribute = gl.getAttribLocation(shaderProgram, "aTexCoords");
+                gl.enableVertexAttribArray(shaderProgram.uvsAttribute);
 
                 shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
                 shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
@@ -254,8 +255,8 @@
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexPositionBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-                //gl.bindBuffer(gl.ARRAY_BUFFER, quadUvsBuffer);
-                //gl.vertexAttribPointer(shaderProgram.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadUvsBuffer);
+                gl.vertexAttribPointer(shaderProgram.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 sendMatricesToShader();
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadVertexPositionBuffer.numItems);
             }
@@ -400,7 +401,7 @@
             function reDraw(){
                 requestAnimFrame(reDraw);
                 handleKeys();
-                incrRotation(45.0);
+                //incrRotation(45.0); //TODO: Uncomment
                 drawScene();
             }
 
