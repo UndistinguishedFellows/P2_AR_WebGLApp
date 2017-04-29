@@ -26,12 +26,11 @@
             precision mediump float;
 
             varying vec2 texCoords;
-            //uniform sampler2D texture;
+            uniform sampler2D texture;
 
             void main(void) {
-                gl_FragColor = vec4(texCoords.x, texCoords.y, 0.0, 1.0);
                 //gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-                //gl_FragColor = texture2D(texture, );
+                gl_FragColor = texture2D(texture, texCoords);
             }
         </script>
         
@@ -119,7 +118,7 @@
                 shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
                 shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
-                //shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "texture");
+                shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "texture");
             }
 
             //----------------------
@@ -237,7 +236,7 @@
             
             function loadSceneOnGPU() {
                 loadQuad();
-                //loadTexture();
+                loadTexture();
                 //loadModel("Material/Teapot.json");
 
             }
@@ -248,9 +247,9 @@
 
             function drawQuad(){
                 //--------
-                //gl.activateTexture(gl.TEXTURE0);
-                //gl.bindTexture(gl.TEXTURE_2D, planeTexture);
-                //gl.uniform1i(shaderProgram.samplerUniform, 0);
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, planeTexture);
+                gl.uniform1i(shaderProgram.samplerUniform, 0);
                 //--------
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexPositionBuffer);
