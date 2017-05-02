@@ -185,35 +185,38 @@
                 request.send();
             }
 
-            var teapotModel = new Object();
+            var modelVertexPositionBuffer;
+            var modelVertexNormalBuffer;
+            var modelVertexTextureCoordBuffer;
+            var modelVertexIndexBuffer;
             function handleLoadedModel(model){
                 //Normals
-                teapotModel.vertexNormalBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexNormalBuffer);
+                modelVertexNormalBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertexNormals), gl.STATIC_DRAW);
-                teapotModel.vertexNormalBuffer.itemSize = 3;
-                teapotModel.vertexNormalBuffer.numItems = model.vertexNormals.length / 3;
+                modelVertexNormalBuffer.itemSize = 3;
+                modelVertexNormalBuffer.numItems = model.vertexNormals.legth / 3;
 
-                //TexCoords
-                teapotModel.vertexTextureCoordBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexTextureCoordBuffer);
+                //TextureCoords
+                modelVertexTextureCoordBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexTextureCoordBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertexTextureCoords), gl.STATIC_DRAW);
-                teapotModel.vertexTextureCoordBuffer.itemSize = 2;
-                teapotModel.vertexTextureCoordBuffer.numItems = model.vertexTextureCoords.length / 2;
+                modelVertexTextureCoordBuffer.itemSize = 2;
+                modelVertexTextureCoordBuffer.numItems = model.vertexTextureCoords.length / 2;
 
-                //Vertex positions
-                teapotModel.vertexPositionBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexPositionBuffer);
+                //VertexPositions
+                modelVertexPositionBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertexPositions), gl.STATIC_DRAW);
-                teapotModel.vertexPositionBuffer.itemSize = 3;
-                teapotModel.vertexPositionBuffer.numItems = model.vertexPositions.length / 3;
+                modelVertexPositionBuffer.itemSize = 3;
+                modelVertexPositionBuffer.numItems = model.vertexPositions.length / 3;
 
-                //Indices
-                teapotModel.vertexIndicesBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.vertexIndicesBuffer);
+                //VertexIndices
+                modelVertexIndexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.indices), gl.STATIC_DRAW);
-                teapotModel.vertexIndicesBuffer.itemSize = 1;
-                teapotModel.vertexIndicesBuffer.numItems = model.indices.length;
+                modelVertexIndexBuffer.itemSize = 1;
+                modelVertexIndexBuffer.numItems = model.indices.length;
             }
 
             //-----------------------
@@ -315,11 +318,11 @@
                 //TODO: Actually draw teapot instead of quad with phong
                 gl.useProgram(phongShader);
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexPositionAttribute);
-                gl.vertexAttribPointer(phongShader.vertexPositionAttribute, teapotModel.vertexPositionAttribute.itemSize, gl.FLOAT, false, 0, 0);
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.vertexIndicesBuffer);
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
+                gl.vertexAttribPointer(phongShader.vertexPositionAttribute, modelVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
                 sendMatricesToShader(phongShader);
-                gl.drawElements(gl.TRIANGLES, teapotModel.vertexIndicesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+                gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
             }
 
             function drawScene() {
@@ -330,18 +333,11 @@
 
                 mat4.identity(mvMatrix);
 
-                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.translate(mvMatrix, [0.0, 0.0, -100.0]);
                 mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
 
                 //drawQuad();
-                if(teapotModel != null)
-                {
-                    drawTeapot();
-                }
-                else
-                {
-                    alert("Model is null!");
-                }
+                drawTeapot();
             }
 
             //-------------------------------
@@ -470,7 +466,7 @@
             function reDraw(){
                 requestAnimFrame(reDraw);
                 handleKeys();
-                //incrRotation(45.0); //TODO: Uncomment
+                incrRotation(45.0); //TODO: Uncomment
                 drawScene();
             }
 
