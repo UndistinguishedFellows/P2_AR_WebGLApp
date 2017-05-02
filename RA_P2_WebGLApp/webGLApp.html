@@ -37,17 +37,36 @@
 
         <script id="pshader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
+            attribute vec3 aVertexNormal;
 
             uniform mat4 uMVMatrix;
             uniform mat4 uPMatrix;
+            uniform mat3 uNMatrix;
+
+            uniform vec3 uLightSourcePosition;
+
+            varying vec3 vertNormalEye;
+            varying vec4 vertPositionEye;
+            varying vec4 lightSourcePositionEye;
 
             void main(void) {
-                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                vertPositionEye = uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * vertPositionEye;
+                vertNormalEye = uNMatrix * normalize(aVertexNormal);
+                lightSourcePositionEye = uMVMatrix * vec4(uLightSourcePosition, 1.0);
             }
         </script>
 
         <script id="pshader-fs" type="x-shader/x-fragment">
             precision mediump float;
+
+            uniform vec3 Ia, Is, Id;
+            uniform vec3 Ka, Ks, Kd;
+            uniform float specular;
+
+            varying vec3 vertNormalEye;
+            varying vec4 vertPositionEye;
+            varying vec4 lightSourcePositionEye;
 
             void main(void) {
                 gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
@@ -155,12 +174,25 @@
 
                 phongShader.vertexPositionAttribute = gl.getAttribLocation(phongShader, "aVertexPosition");
                 gl.enableVertexAttribArray(phongShader.vertexPositionAttribute);
+                phongShader.vertexNormalAttribute = gl.getAttribLocation(phongShader, "aVertexNormal");
+                gl.enableVertexAttribArray(phongShader.vertexNormalAttribute);
 
                 phongShader.pMatrixUniform = gl.getUniformLocation(phongShader, "uPMatrix");
                 //phongShader.vMatrixUniform = gl.getUniformLocation(phongShader, "uVMatrix");
                 phongShader.mvMatrixUniform = gl.getUniformLocation(phongShader, "uMVMatrix");
 
-                //TODO: locations for light and colors
+                phongShader.nMatrixUniform = gl.getUniformLocation(phongShader, "uNMatrix");
+                phongShader.lightSourcePos = gl.getUniformLocation(phongShader, "uLightSourcePosition");
+
+                phongShader.iaUniform = gl.getUniformLocation(phongShader, "Ia");
+                phongShader.isUniform = gl.getUniformLocation(phongShader, "Is");
+                phongShader.idUniform = gl.getUniformLocation(phongShader, "Id");
+
+                phongShader.kaUniform = gl.getUniformLocation(phongShader, "Ka");
+                phongShader.ksUniform = gl.getUniformLocation(phongShader, "Ks");
+                phongShader.kdUniform = gl.getUniformLocation(phongShader, "Kd");
+
+                phongShader.specularUniform = gl.getUniformLocation(phongShader, "specular");
 
                 gl.useProgram(null);
             }
@@ -331,8 +363,30 @@
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
                 gl.vertexAttribPointer(phongShader.vertexPositionAttribute, modelVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer);
+                gl.vertexAttribPointer(phongShader.vertexNormalAttribute, modelVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
                 sendMatricesToShader(phongShader);
+
+                var normalMatrix = mat3.create();
+                mat4.toInverseMat3(mvMatrix, normalMatrix);
+                mat3.transpose(normalMatrix);
+                gl.uniformMatrix3fv(phongShader.nMatrixUniform, false, normalMatrix);
+
+                gl.uniform3fv(phongShader.lightSourcePos, lightPos);
+
+                gl.uniform3fv(phongShader.iaUniform, ia);
+                gl.uniform3fv(phongShader.isUniform, is);
+                gl.uniform3fv(phongShader.idUniform, id);
+
+                gl.uniform3fv(phongShader.kaUniform, ka);
+                gl.uniform3fv(phongShader.kaUniform, ks);
+                gl.uniform3fv(phongShader.kaUniform, kd);
+
+                gl.uniform1f(phongShader.specularUniform, specular);
+
                 gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
             }
 
