@@ -167,7 +167,7 @@
             }
 
             function initShaders() {
-                createTextureShader();
+                //createTextureShader();
                 createPhongShader();
             }
 
@@ -185,7 +185,7 @@
                 request.send();
             }
 
-            var teapotModel = null;
+            var teapotModel = new Object();
             function handleLoadedModel(model){
                 //Normals
                 teapotModel.vertexNormalBuffer = gl.createBuffer();
@@ -333,10 +333,14 @@
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
                 mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
 
-                drawQuad();
+                //drawQuad();
                 if(teapotModel != null)
                 {
-                    //drawTeapot();
+                    drawTeapot();
+                }
+                else
+                {
+                    alert("Model is null!");
                 }
             }
 
