@@ -5,6 +5,7 @@
 
         <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
         <script type="text/javascript" src="webgl-utils.js"></script>
+        <script type="text/javascript" src="json.js"></script>
 
         <script id="shader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
@@ -33,7 +34,27 @@
                 gl_FragColor = texture2D(texture, texCoords);
             }
         </script>
-        
+
+        <script id="pshader-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+
+            uniform mat4 uMVMatrix;
+            uniform mat4 uVMatrix;
+            uniform mat4 uPMatrix;
+
+            void main(void) {
+                gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            }
+        </script>
+
+        <script id="pshader-fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            void main(void) {
+                gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+            }
+        </script>
+
         <script type="text/javascript">
 
             var gl;
@@ -87,14 +108,9 @@
             //---------------------------------
             //Shaders
 
-            var shaderProgram, shaderTextureProgram;
+            var shaderProgram, phongShader;
 
-            function initTextureShader(){
-                var fragmentShader = getShader(gl, "shader-fs");
-                var vertexShader = getShader(gl, "shader-fs");
-            }
-
-            function initShaders() {
+            function createTextureShader(){
                 var fragmentShader = getShader(gl, "shader-fs");
                 var vertexShader = getShader(gl, "shader-vs");
 
@@ -119,6 +135,40 @@
                 shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
                 shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "texture");
+
+                gl.useProgram(null);
+            }
+
+            function createPhongShader(){
+                var fragShader = getShader(gl, "pshader-fs");
+                var vertShader = getShader(gl, "pshader-vs");
+
+                phongShader = gl.createProgram();
+                gl.attachShader(phongShader, vertShader);
+                gl.attachShader(phongShader, fragShader);
+                gl.linkProgram(phongShader);
+
+                if (!gl.getProgramParameter(phongShader, gl.LINK_STATUS)) {
+                    alert("Could not initialise phong shader.");
+                }
+
+                gl.useProgram(phongShader);
+
+                phongShader.vertexPositionAttribute = gl.getAttribLocation(phongShader, "aVertexPosition");
+                gl.enableVertexAttribArray(phongShader.vertexPositionAttribute);
+
+                phongShader.pMatrixUniform = gl.getUniformLocation(phongShader, "uPMatrix");
+                phongShader.vMatrixUniform = gl.getUniformLocation(phongShader, "uVMatrix");
+                phongShader.mvMatrixUniform = gl.getUniformLocation(phongShader, "uMVMatrix");
+
+                //TODO: locations for light and colors
+
+                gl.useProgram(null);
+            }
+
+            function initShaders() {
+                createTextureShader();
+                createPhongShader();
             }
 
             //----------------------
@@ -129,14 +179,14 @@
                 request.open("GET", modelFile);
                 request.onreadystatechange = function () {
                     if(request.readyState == 4){
-                        handleLoadModel(JSON.parse(request.responseText));
+                        handleLoadedModel(JSON.parse(request.responseText));
                     }
                 }
                 request.send();
             }
 
-            var teapotModel;
-            function handleLoadModel(model){
+            var teapotModel = null;
+            function handleLoadedModel(model){
                 //Normals
                 teapotModel.vertexNormalBuffer = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexNormalBuffer);
@@ -197,10 +247,10 @@
             var vMatrix = mat4.create();
             mat4.identity(vMatrix);
 
-            function sendMatricesToShader() {
-                gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-                gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-                gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
+            function sendMatricesToShader(shader) {
+                gl.uniformMatrix4fv(shader.pMatrixUniform, false, pMatrix);
+                gl.uniformMatrix4fv(shader.mvMatrixUniform, false, mvMatrix);
+                gl.uniformMatrix4fv(shader.vMatrixUniform, false, vMatrix);
             }
 
 
@@ -237,7 +287,7 @@
             function loadSceneOnGPU() {
                 loadQuad();
                 loadTexture();
-                //loadModel("Material/Teapot.json");
+                loadModel("Teapot.json");
 
             }
 
@@ -246,6 +296,7 @@
             var zFar = 100.0;
 
             function drawQuad(){
+                gl.useProgram(shaderProgram);
                 //--------
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, planeTexture);
@@ -256,8 +307,19 @@
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadUvsBuffer);
                 gl.vertexAttribPointer(shaderProgram.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
-                sendMatricesToShader();
+                sendMatricesToShader(shaderProgram);
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadVertexPositionBuffer.numItems);
+            }
+
+            function drawTeapot(){
+                //TODO: Actually draw teapot instead of quad with phong
+                gl.useProgram(phongShader);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, teapotModel.vertexPositionAttribute);
+                gl.vertexAttribPointer(phongShader.vertexPositionAttribute, teapotModel.vertexPositionAttribute.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.vertexIndicesBuffer);
+                sendMatricesToShader(phongShader);
+                gl.drawElements(gl.TRIANGLES, teapotModel.vertexIndicesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
             }
 
             function drawScene() {
@@ -272,6 +334,10 @@
                 mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
 
                 drawQuad();
+                if(teapotModel != null)
+                {
+                    //drawTeapot();
+                }
             }
 
             //-------------------------------
