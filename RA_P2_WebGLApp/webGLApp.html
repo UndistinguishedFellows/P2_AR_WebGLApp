@@ -298,6 +298,18 @@
             var zNear = 0.1;
             var zFar = 100.0;
 
+            //Light position
+            var lightPos = vec3.create([10.0, 20.0, 10.0]);
+            //Light properties
+            var ia = vec3.create([0.3, 0.3, 0.3]); //Ambient light intensity
+            var id = vec3.create([1.0, 1.0, 1.0]); //Diffuse light intensity
+            var is = vec3.create([1.0, 1.0, 1.0]); //Specular light intensity
+            //Material properties
+            var ka = vec3.create([0.6, 0.6, 0.6]); //Ambient coefficient
+            var kd = vec3.create([0.8, 0.8, 0.8]); //Diffuse coeficient
+            var ks = vec3.create([0.8, 0.8, 0.8]); //Specular coeficient
+            var specular = 100;
+
             function drawQuad(){
                 gl.useProgram(shaderProgram);
                 //--------
@@ -333,8 +345,9 @@
 
                 mat4.identity(mvMatrix);
 
-                mat4.translate(mvMatrix, [0.0, 0.0, -100.0]);
+                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
                 mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
+                mat4.scale(mvMatrix, [0.05, 0.05, 0.05]); //Only for teapot
 
                 //drawQuad();
                 drawTeapot();
