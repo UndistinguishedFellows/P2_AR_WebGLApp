@@ -39,11 +39,10 @@
             attribute vec3 aVertexPosition;
 
             uniform mat4 uMVMatrix;
-            uniform mat4 uVMatrix;
             uniform mat4 uPMatrix;
 
             void main(void) {
-                gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
             }
         </script>
 
@@ -158,7 +157,7 @@
                 gl.enableVertexAttribArray(phongShader.vertexPositionAttribute);
 
                 phongShader.pMatrixUniform = gl.getUniformLocation(phongShader, "uPMatrix");
-                phongShader.vMatrixUniform = gl.getUniformLocation(phongShader, "uVMatrix");
+                //phongShader.vMatrixUniform = gl.getUniformLocation(phongShader, "uVMatrix");
                 phongShader.mvMatrixUniform = gl.getUniformLocation(phongShader, "uMVMatrix");
 
                 //TODO: locations for light and colors
@@ -253,7 +252,7 @@
             function sendMatricesToShader(shader) {
                 gl.uniformMatrix4fv(shader.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shader.mvMatrixUniform, false, mvMatrix);
-                gl.uniformMatrix4fv(shader.vMatrixUniform, false, vMatrix);
+                //gl.uniformMatrix4fv(shader.vMatrixUniform, false, vMatrix);
             }
 
 
