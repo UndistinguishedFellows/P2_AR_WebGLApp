@@ -69,7 +69,16 @@
             varying vec4 lightSourcePositionEye;
 
             void main(void) {
-                gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                vec3 L = normalize(lightSourcePositionEye.xyz - vertPositionEye.xyz);
+                vec3 N = normalize(vertNormalEye);
+                float dotNL = max(dot(N, L), 0.0);
+
+                vec3 V = normalize(-vertPositionEye.xyz);
+                vec3 R = reflect(-L, N);
+                float dotRVs = pow(max(dot(R, V), 0.0), specular);
+
+                vec3 shadedColor = Ka * Ia;// + Kd * Id * dotNL + Ks * Is * dotRVs;
+                gl_FragColor = vec4(shadedColor, 1.0);
             }
         </script>
 
@@ -330,15 +339,15 @@
             var zFar = 100.0;
 
             //Light position
-            var lightPos = vec3.create([10.0, 20.0, 10.0]);
+            var lightPos = [10.0, 20.0, 10.0];
             //Light properties
-            var ia = vec3.create([0.3, 0.3, 0.3]); //Ambient light intensity
-            var id = vec3.create([1.0, 1.0, 1.0]); //Diffuse light intensity
-            var is = vec3.create([1.0, 1.0, 1.0]); //Specular light intensity
+            var ia = [0.3, 0.3, 0.3]; //Ambient light intensity
+            var id = [1.0, 1.0, 1.0]; //Diffuse light intensity
+            var is = [1.0, 1.0, 1.0]; //Specular light intensity
             //Material properties
-            var ka = vec3.create([0.6, 0.6, 0.6]); //Ambient coefficient
-            var kd = vec3.create([0.8, 0.8, 0.8]); //Diffuse coeficient
-            var ks = vec3.create([0.8, 0.8, 0.8]); //Specular coeficient
+            var ka = [0.6, 0.6, 0.6]; //Ambient coefficient
+            var kd = [0.8, 0.8, 0.8]; //Diffuse coeficient
+            var ks = [0.8, 0.8, 0.8]; //Specular coeficient
             var specular = 100;
 
             function drawQuad(){
@@ -358,7 +367,6 @@
             }
 
             function drawTeapot(){
-                //TODO: Actually draw teapot instead of quad with phong
                 gl.useProgram(phongShader);
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
@@ -375,15 +383,20 @@
                 mat3.transpose(normalMatrix);
                 gl.uniformMatrix3fv(phongShader.nMatrixUniform, false, normalMatrix);
 
-                gl.uniform3fv(phongShader.lightSourcePos, lightPos);
+                //Light position
+                var lPosN = vec3.create();
+                vec3.normalize(lightPos, lPosN);
+                gl.uniform3f(phongShader.lightSourcePos, lightPos[0], lightPos[1], lightPos[2]);
 
-                gl.uniform3fv(phongShader.iaUniform, ia);
-                gl.uniform3fv(phongShader.isUniform, is);
-                gl.uniform3fv(phongShader.idUniform, id);
+                //Light intensity
+                gl.uniform3f(phongShader.iaUniform, ia[0], ia[1], ia[2]);
+                gl.uniform3f(phongShader.isUniform, is[0], is[1], is[2]);
+                gl.uniform3f(phongShader.idUniform, id[0], id[1], id[2]);
 
-                gl.uniform3fv(phongShader.kaUniform, ka);
-                gl.uniform3fv(phongShader.kaUniform, ks);
-                gl.uniform3fv(phongShader.kaUniform, kd);
+                //Surface properies
+                gl.uniform3f(phongShader.kaUniform, ka[0], ka[1], ka[2]);
+                gl.uniform3f(phongShader.kaUniform, ks[0], ks[1], ks[2]);
+                gl.uniform3f(phongShader.kaUniform, kd[0], kd[1], kd[2]);
 
                 gl.uniform1f(phongShader.specularUniform, specular);
 
