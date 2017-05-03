@@ -384,8 +384,6 @@
                 gl.uniformMatrix3fv(phongShader.nMatrixUniform, false, normalMatrix);
 
                 //Light position
-                var lPosN = vec3.create();
-                vec3.normalize(lightPos, lPosN);
                 gl.uniform3f(phongShader.lightSourcePos, lightPos[0], lightPos[1], lightPos[2]);
 
                 //Light intensity
