@@ -10,16 +10,18 @@
         <script id="shader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
             attribute vec2 aTexCoords;
+            attribute vec3 aVertexNormal;
 
             uniform mat4 uMVMatrix;
-            uniform mat4 uVMatrix;
             uniform mat4 uPMatrix;
 
             varying vec2 texCoords;
+            varying vec3 normal;
 
             void main(void) {
-                gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
                 texCoords = aTexCoords;
+                normal = aVertexNormal;
             }
         </script>
         
@@ -27,10 +29,12 @@
             precision mediump float;
 
             varying vec2 texCoords;
+            varying vec3 normal;
+
             uniform sampler2D texture;
 
             void main(void) {
-                //gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                //gl_FragColor = vec4(normal.x, normal.y, normal.z, 1.0);
                 gl_FragColor = texture2D(texture, texCoords);
             }
         </script>
@@ -156,9 +160,10 @@
                 gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
                 shaderProgram.uvsAttribute = gl.getAttribLocation(shaderProgram, "aTexCoords");
                 gl.enableVertexAttribArray(shaderProgram.uvsAttribute);
+                shaderProgram.normalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+                gl.enableVertexAttribArray(shaderProgram.normalAttribute);
 
                 shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-                shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
                 shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
                 shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "texture");
@@ -207,7 +212,7 @@
             }
 
             function initShaders() {
-                //createTextureShader();
+                createTextureShader();
                 createPhongShader();
             }
 
@@ -298,15 +303,15 @@
 
 
 
-            var quadVertexPositionBuffer, quadUvsBuffer;
+            var quadVertexPositionBuffer, quadUvsBuffer, quadNormalsBuffer;
             function loadQuad(){
                 quadVertexPositionBuffer = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexPositionBuffer);
                 var vertices = [
-                    -1.0, -1.0, 0.0,
-                    1.0, -1.0, 0.0,
-                    -1.0, 1.0, 0.0,
-                    1.0, 1.0, 0.0
+                    -1.0, 0.0, -1.0,
+                    1.0, 0.0, -1.0,
+                    -1.0, 0.0, 1.0,
+                    1.0, 0.0, 1.0
                 ];
 
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -325,6 +330,19 @@
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
                 quadUvsBuffer.itemSize = 2;
                 quadUvsBuffer.numItems = 4;
+
+                quadNormalsBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadNormalsBuffer);
+                var normals = [
+                    0.0, 1.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 1.0, 0.0
+                ];
+
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+                quadNormalsBuffer.itemSize = 3;
+                quadNormalsBuffer.numItems = 4;
             }
             
             function loadSceneOnGPU() {
@@ -362,6 +380,8 @@
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadUvsBuffer);
                 gl.vertexAttribPointer(shaderProgram.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadNormalsBuffer);
+                gl.vertexAttribPointer(shaderProgram.normalAttribute, quadNormalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 sendMatricesToShader(shaderProgram);
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadVertexPositionBuffer.numItems);
             }
@@ -410,10 +430,19 @@
                 mat4.identity(mvMatrix);
 
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.rotate(mvMatrix, deg2Rad(45.0), [1.0, 0.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
+
+                drawQuad();
+
+                mat4.identity(mvMatrix);
+
+                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.rotate(mvMatrix, deg2Rad(45.0), [1.0, 0.0, 0.0]);
+                mat4.translate(mvMatrix, [0.0, 1.0, 0.0]);
                 mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
                 mat4.scale(mvMatrix, [0.05, 0.05, 0.05]); //Only for teapot
 
-                //drawQuad();
                 drawTeapot();
             }
 
