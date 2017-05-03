@@ -77,7 +77,7 @@
                 vec3 R = reflect(-L, N);
                 float dotRVs = pow(max(dot(R, V), 0.0), specular);
 
-                vec3 shadedColor = Ka * Ia;// + Kd * Id * dotNL + Ks * Is * dotRVs;
+                vec3 shadedColor = Ka * Ia + Kd * Id * dotNL + Ks * Is * dotRVs;
                 gl_FragColor = vec4(shadedColor, 1.0);
             }
         </script>
@@ -395,8 +395,8 @@
 
                 //Surface properies
                 gl.uniform3f(phongShader.kaUniform, ka[0], ka[1], ka[2]);
-                gl.uniform3f(phongShader.kaUniform, ks[0], ks[1], ks[2]);
-                gl.uniform3f(phongShader.kaUniform, kd[0], kd[1], kd[2]);
+                gl.uniform3f(phongShader.ksUniform, ks[0], ks[1], ks[2]);
+                gl.uniform3f(phongShader.kdUniform, kd[0], kd[1], kd[2]);
 
                 gl.uniform1f(phongShader.specularUniform, specular);
 
