@@ -7,35 +7,55 @@
         <script type="text/javascript" src="webgl-utils.js"></script>
         <script type="text/javascript" src="json.js"></script>
 
-        <script id="shader-vs" type="x-shader/x-vertex">
+        <script id="textureShader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
             attribute vec2 aTexCoords;
             attribute vec3 aVertexNormal;
 
             uniform mat4 uMVMatrix;
             uniform mat4 uPMatrix;
+            uniform mat3 uNMatrix;
+
+            uniform mat4 uMVMatrixLight;
+            uniform mat4 uPMatrixLight;
 
             varying vec2 texCoords;
             varying vec3 normal;
+            varying vec4 posFromLightView;
 
             void main(void) {
                 gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
                 texCoords = aTexCoords;
                 normal = aVertexNormal;
+                posFromLightView = uPMatrixLight * uMVMatrixLight * vec4(aVertexPosition, 1.0);
             }
         </script>
         
-        <script id="shader-fs" type="x-shader/x-fragment">
+        <script id="textureShader-fs" type="x-shader/x-fragment">
             precision mediump float;
 
             varying vec2 texCoords;
             varying vec3 normal;
+            varying vec4 posFromLightView;
 
             uniform sampler2D texture;
+            uniform sampler2D textureLight;
 
             void main(void) {
-                //gl_FragColor = vec4(normal.x, normal.y, normal.z, 1.0);
-                gl_FragColor = texture2D(texture, texCoords);
+                vec2 myCoords = (1.0 + posFromLightView.xy / posFromLightView.w)/2.0;
+				float depthFragFromLight = (1.0 + posFromLightView.z / posFromLightView.w) / 2.0;
+				float depthFromLightTexture = texture2D(textureLight, myCoords).r;
+
+                vec4 col = texture2D(texture, texCoords);
+
+                if (depthFragFromLight - depthFromLightTexture > 0.02)
+                {
+                    gl_FragColor = vec4(col.rgb * 0.6, 1.0);
+                }
+				else
+                {
+                    gl_FragColor = vec4(col.rgb, 1.0);
+                }
             }
         </script>
 
@@ -83,6 +103,27 @@
 
                 vec3 shadedColor = Ka * Ia + Kd * Id * dotNL + Ks * Is * dotRVs;
                 gl_FragColor = vec4(shadedColor, 1.0);
+            }
+        </script>
+
+        <script id="renderFromLight-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+            attribute vec3 aVertexNormal;
+
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+
+            void main(){
+                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                vec3 normal = aVertexNormal;
+            }
+        </script>
+
+        <script id="renderFromLight-fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            void main(){
+                gl_FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
             }
         </script>
 
@@ -139,34 +180,39 @@
             //---------------------------------
             //Shaders
 
-            var shaderProgram, phongShader;
+            var textureShader, phongShader, renderFromLightShader;
 
             function createTextureShader(){
-                var fragmentShader = getShader(gl, "shader-fs");
-                var vertexShader = getShader(gl, "shader-vs");
+                var fragmentShader = getShader(gl, "textureShader-fs");
+                var vertexShader = getShader(gl, "textureShader-vs");
 
-                shaderProgram = gl.createProgram();
-                gl.attachShader(shaderProgram, vertexShader);
-                gl.attachShader(shaderProgram, fragmentShader);
-                gl.linkProgram(shaderProgram);
+                textureShader = gl.createProgram();
+                gl.attachShader(textureShader, vertexShader);
+                gl.attachShader(textureShader, fragmentShader);
+                gl.linkProgram(textureShader);
 
-                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                if (!gl.getProgramParameter(textureShader, gl.LINK_STATUS)) {
                     alert("Could not initialise shaders");
                 }
 
-                gl.useProgram(shaderProgram);
+                gl.useProgram(textureShader);
 
-                shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-                shaderProgram.uvsAttribute = gl.getAttribLocation(shaderProgram, "aTexCoords");
-                gl.enableVertexAttribArray(shaderProgram.uvsAttribute);
-                shaderProgram.normalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-                gl.enableVertexAttribArray(shaderProgram.normalAttribute);
+                textureShader.vertexPositionAttribute = gl.getAttribLocation(textureShader, "aVertexPosition");
+                gl.enableVertexAttribArray(textureShader.vertexPositionAttribute);
+                textureShader.uvsAttribute = gl.getAttribLocation(textureShader, "aTexCoords");
+                gl.enableVertexAttribArray(textureShader.uvsAttribute);
+                textureShader.normalAttribute = gl.getAttribLocation(textureShader, "aVertexNormal");
+                gl.enableVertexAttribArray(textureShader.normalAttribute);
 
-                shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-                shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+                textureShader.pMatrixUniform = gl.getUniformLocation(textureShader, "uPMatrix");
+                textureShader.mvMatrixUniform = gl.getUniformLocation(textureShader, "uMVMatrix");
 
-                shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "texture");
+                textureShader.samplerUniform = gl.getUniformLocation(textureShader, "texture");
+
+                textureShader.nMatrixUniform = gl.getUniformLocation(textureShader, "uNMatrix");
+                textureShader.samplerLightUniform = gl.getUniformLocation(textureShader, "textureLight");
+                textureShader.pMatrixLightUniform = gl.getUniformLocation(textureShader, "uPMatrixLight");
+                textureShader.mvMatrixLightUniform = gl.getUniformLocation(textureShader, "uMVMatrixLight");
 
                 gl.useProgram(null);
             }
@@ -211,9 +257,36 @@
                 gl.useProgram(null);
             }
 
+            function createRenderFromLightShader(){
+                var fragmentShader = getShader(gl, "renderFromLight-fs");
+                var vertexShader = getShader(gl, "renderFromLight-vs");
+
+                renderFromLightShader = gl.createProgram();
+                gl.attachShader(renderFromLightShader, vertexShader);
+                gl.attachShader(renderFromLightShader, fragmentShader);
+                gl.linkProgram(renderFromLightShader);
+
+                if (!gl.getProgramParameter(renderFromLightShader, gl.LINK_STATUS)) {
+                    alert("Could not initialise render from light shader");
+                }
+
+                gl.useProgram(renderFromLightShader);
+
+                renderFromLightShader.vertexPositionAttribute = gl.getAttribLocation(renderFromLightShader, "aVertexPosition");
+                gl.enableVertexAttribArray(renderFromLightShader.vertexPositionAttribute);
+                renderFromLightShader.normalAttribute = gl.getAttribLocation(renderFromLightShader, "aVertexNormal");
+                gl.enableVertexAttribArray(renderFromLightShader.normalAttribute);
+
+                renderFromLightShader.pMatrixUniform = gl.getUniformLocation(renderFromLightShader, "uPMatrix");
+                renderFromLightShader.mvMatrixUniform = gl.getUniformLocation(renderFromLightShader, "uMVMatrix");
+
+                gl.useProgram(null);
+            }
+
             function initShaders() {
                 createTextureShader();
                 createPhongShader();
+                createRenderFromLightShader();
             }
 
             //----------------------
@@ -289,11 +362,54 @@
 
 
             //-----------------------
+            //Init frame buffer
+
+            var rttFramebuffer;
+            var rttTexture;
+
+            function initTextureFramebuffer(){
+                rttFramebuffer = gl.createFramebuffer();
+                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                rttFramebuffer.width = 1024;
+                rttFramebuffer.height = 1024;
+
+                rttTexture = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+                var renderbuffer = gl.createRenderbuffer();
+                gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            }
+
+            //------------------------
 
             var mvMatrix = mat4.create();
             var pMatrix = mat4.create();
-            var vMatrix = mat4.create();
-            mat4.identity(vMatrix);
+            var mvMatrixStack = [];
+
+            function mvPushMatrix(){
+                var copy = mat4.create();
+                mat4.set(mvMatrix, copy);
+                mvMatrixStack.push(copy);
+            }
+
+            function mvPopMatrix(){
+                if (mvMatrixStack.length == 0) {
+                    throw "Invalid popMatrix!";
+                }
+                mvMatrix = mvMatrixStack.pop();
+            }
 
             function sendMatricesToShader(shader) {
                 gl.uniformMatrix4fv(shader.pMatrixUniform, false, pMatrix);
@@ -349,12 +465,11 @@
                 loadQuad();
                 loadTexture();
                 loadModel("Teapot.json");
-
             }
 
             var fov = 45;
-            var zNear = 0.1;
-            var zFar = 100.0;
+            var zNear = 2.0;
+            var zFar = 10.0;
 
             //Light position
             var lightPos = [10.0, 20.0, 10.0];
@@ -369,20 +484,36 @@
             var specular = 100;
 
             function drawQuad(){
-                gl.useProgram(shaderProgram);
+                gl.useProgram(textureShader);
                 //--------
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, planeTexture);
-                gl.uniform1i(shaderProgram.samplerUniform, 0);
+                gl.uniform1i(textureShader.samplerUniform, 0);
+
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+                gl.uniform1i(textureShader.samplerLightUniform, 1);
                 //--------
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexPositionBuffer);
-                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.vertexAttribPointer(textureShader.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadUvsBuffer);
-                gl.vertexAttribPointer(shaderProgram.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.vertexAttribPointer(textureShader.uvsAttribute, quadUvsBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 gl.bindBuffer(gl.ARRAY_BUFFER, quadNormalsBuffer);
-                gl.vertexAttribPointer(shaderProgram.normalAttribute, quadNormalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
-                sendMatricesToShader(shaderProgram);
+                gl.vertexAttribPointer(textureShader.normalAttribute, quadNormalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                sendMatricesToShader(textureShader);
+
+                var normalMatrix = mat3.create();
+                mat4.toInverseMat3(mvMatrix, normalMatrix);
+                mat3.transpose(normalMatrix);
+                gl.uniformMatrix3fv(textureShader.nMatrixUniform, false, normalMatrix);
+
+                // Send the projection matrix of the light's view to the shader
+                gl.uniformMatrix4fv(textureShader.pMatrixLightUniform, false, pMatrixLight);
+
+                // Send the modelview matrix of the occluder from the light's view to the shader
+                gl.uniformMatrix4fv(textureShader.mvMatrixLightUniform, false, mvMatrixOccluderLight);
+
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadVertexPositionBuffer.numItems);
             }
 
@@ -393,8 +524,6 @@
                 gl.vertexAttribPointer(phongShader.vertexPositionAttribute, modelVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer);
                 gl.vertexAttribPointer(phongShader.vertexNormalAttribute, modelVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
                 sendMatricesToShader(phongShader);
 
@@ -421,28 +550,96 @@
                 gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
             }
 
+            var pMatrixLight = mat4.create();
+            var mvMatrixOccluderLight = mat4.create();
+            var mvMatrixFloorLight = mat4.create();
+
+            function drawFromLight(){
+                gl.viewport(0, 0, 1024, 1024);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
+
+                //Save the projection matrix from the light source view.
+                mat4.identity(pMatrixLight);
+                mat4.set(pMatrix, pMatrixLight);
+
+                //Enable shader program to render from light source
+                gl.useProgram(renderFromLightShader);
+
+                mat4.identity(mvMatrix);
+                mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
+                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
+
+                mvPushMatrix();
+                mat4.translate(mvMatrix, [0.0, 1.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(-rotObject), [0.0, 1.0, 0.0]);
+                mat4.scale(mvMatrix, [0.05, 0.05, 0.05]);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
+                gl.vertexAttribPointer(renderFromLightShader.vertexPositionAttribute, modelVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer);
+                gl.vertexAttribPointer(renderFromLightShader.vertexNormalAttribute, modelVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
+                sendMatricesToShader(renderFromLightShader);
+                gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+                //Save the modelview of the occluder from the light source view
+                mat4.identity(mvMatrixOccluderLight);
+                mat4.set(mvMatrix, mvMatrixOccluderLight);
+
+                mvPopMatrix();
+
+                mvPushMatrix();
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexPositionBuffer);
+                gl.vertexAttribPointer(renderFromLightShader.vertexPositionAttribute, quadVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadNormalsBuffer);
+                gl.vertexAttribPointer(renderFromLightShader.vertexNormalAttribute, quadNormalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                sendMatricesToShader(renderFromLightShader);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadVertexPositionBuffer.numItems);
+
+                //Save the modelview of the floor from the light source view
+                mat4.identity(mvMatrixFloorLight);
+                mat4.set(mvMatrix, mvMatrixFloorLight);
+
+                mvPopMatrix();
+            }
+
             function drawScene() {
+                //Enable the framebuffer with its associated texture and render from the light source
+                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                drawFromLight();
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+                //2nd rendering pass
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
                 mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
 
                 mat4.identity(mvMatrix);
+                mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
+                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
 
-                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
-                mat4.rotate(mvMatrix, deg2Rad(45.0), [1.0, 0.0, 0.0]);
+                //First render the teapot
+                mvPushMatrix();
+                mat4.translate(mvMatrix, [0.0, 1.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
+                mat4.scale(mvMatrix, [0.05, 0.05, 0.05]);
+
+                drawTeapot();
+
+                mvPopMatrix();
+
+                //Now render the floor
+                mvPushMatrix();
 
                 drawQuad();
 
-                mat4.identity(mvMatrix);
-
-                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
-                mat4.rotate(mvMatrix, deg2Rad(45.0), [1.0, 0.0, 0.0]);
-                mat4.translate(mvMatrix, [0.0, 1.0, 0.0]);
-                mat4.rotate(mvMatrix, deg2Rad(rotObject), [0.0, 1.0, 0.0]);
-                mat4.scale(mvMatrix, [0.05, 0.05, 0.05]); //Only for teapot
-
-                drawTeapot();
+                mvPopMatrix();
             }
 
             //-------------------------------
@@ -571,7 +768,7 @@
             function reDraw(){
                 requestAnimFrame(reDraw);
                 handleKeys();
-                incrRotation(45.0); //TODO: Uncomment
+                incrRotation(45.0);
                 drawScene();
             }
 
@@ -589,6 +786,7 @@
                 document.onmousemove = handleMouseMove;
 
                 initGL(canvas);
+                initTextureFramebuffer();
                 initShaders();
                 loadSceneOnGPU();
 
