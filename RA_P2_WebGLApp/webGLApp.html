@@ -79,7 +79,8 @@
                 vertPositionEye = uMVMatrix * vec4(aVertexPosition, 1.0);
                 gl_Position = uPMatrix * vertPositionEye;
                 vertNormalEye = uNMatrix * normalize(aVertexNormal);
-                lightSourcePositionEye = uMVMatrix * vec4(uLightSourcePosition, 1.0);
+                //lightSourcePositionEye = uMVMatrix * vec4(uLightSourcePosition, 1.0);
+                lightSourcePositionEye = vec4(uLightSourcePosition, 1.0);
             }
         </script>
 
@@ -558,7 +559,7 @@
                 gl.viewport(0, 0, 1024, 1024);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
+                mat4.perspective(45.0, gl.viewportWidth / gl.viewportHeight, 2.0, 10.0, pMatrix);
 
                 //Save the projection matrix from the light source view.
                 mat4.identity(pMatrixLight);
@@ -622,8 +623,8 @@
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
                 mat4.multiply(mvMatrix, mouseRotationMatrix); //Apply mouse input rotation matrix
-                //mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
-                //mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
 
                 //First render the teapot
                 mvPushMatrix();
