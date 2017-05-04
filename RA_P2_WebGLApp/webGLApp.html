@@ -67,6 +67,7 @@
 
             uniform mat4 uMVMatrix;
             uniform mat4 uPMatrix;
+
             uniform mat3 uNMatrix;
 
             uniform vec3 uLightSourcePosition;
@@ -570,8 +571,8 @@
 
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
-                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
-                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
+                mat4.multiply(mvMatrix, mouseRotationMatrix); //Apply mouse input rotation matrix
+                mat4.rotate(mvMatrix, deg2Rad(15.0), [1.0, 0.0, 0.0]);
 
                 mvPushMatrix();
                 mat4.translate(mvMatrix, [0.0, 1.0, 0.0]);
@@ -623,8 +624,7 @@
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
                 mat4.multiply(mvMatrix, mouseRotationMatrix); //Apply mouse input rotation matrix
-                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
-                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
+                mat4.rotate(mvMatrix, deg2Rad(15.0), [1.0, 0.0, 0.0]);
 
                 //First render the teapot
                 mvPushMatrix();
