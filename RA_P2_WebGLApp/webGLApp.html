@@ -46,7 +46,7 @@
 				float depthFragFromLight = (1.0 + posFromLightView.z / posFromLightView.w) / 2.0;
 				float depthFromLightTexture = texture2D(textureLight, myCoords).r;
 
-                vec4 col = texture2D(texture, texCoords);
+                /*vec4 col = texture2D(texture, texCoords);
 
                 if (depthFragFromLight - depthFromLightTexture > 0.02)
                 {
@@ -55,7 +55,9 @@
 				else
                 {
                     gl_FragColor = vec4(col.rgb, 1.0);
-                }
+                }*/
+
+                gl_FragColor = texture2D(texture, texCoords);
             }
         </script>
 
@@ -238,7 +240,6 @@
                 gl.enableVertexAttribArray(phongShader.vertexNormalAttribute);
 
                 phongShader.pMatrixUniform = gl.getUniformLocation(phongShader, "uPMatrix");
-                //phongShader.vMatrixUniform = gl.getUniformLocation(phongShader, "uVMatrix");
                 phongShader.mvMatrixUniform = gl.getUniformLocation(phongShader, "uMVMatrix");
 
                 phongShader.nMatrixUniform = gl.getUniformLocation(phongShader, "uNMatrix");
@@ -414,7 +415,6 @@
             function sendMatricesToShader(shader) {
                 gl.uniformMatrix4fv(shader.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shader.mvMatrixUniform, false, mvMatrix);
-                //gl.uniformMatrix4fv(shader.vMatrixUniform, false, vMatrix);
             }
 
 
@@ -609,9 +609,9 @@
 
             function drawScene() {
                 //Enable the framebuffer with its associated texture and render from the light source
-                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                /*gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
                 drawFromLight();
-                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);*/
 
                 //2nd rendering pass
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -621,8 +621,9 @@
 
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
-                mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
-                mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
+                mat4.multiply(mvMatrix, mouseRotationMatrix); //Apply mouse input rotation matrix
+                //mat4.rotate(mvMatrix, deg2Rad(67.5), [1.0, 0.0, 0.0]);
+                //mat4.rotate(mvMatrix, deg2Rad(-45.0), [0.0, 1.0, 0.0]);
 
                 //First render the teapot
                 mvPushMatrix();
@@ -679,6 +680,9 @@
                 mouseDown = false;
             }
 
+            var mouseRotationMatrix = mat4.create();
+            mat4.identity(mouseRotationMatrix);
+
             function handleMouseMove(event){
                 if(!mouseDown)
                     return;
@@ -694,16 +698,19 @@
 
                     var newRotationMat = mat4.create();
                     mat4.identity(newRotationMat);
-                    mat4.rotate(newRotationMat, deg2Rad(deltaX/10), [0, 1, 0]);
-                    mat4.rotate(newRotationMat, deg2Rad(deltaY/10), [1, 0, 0]);
-                    mat4.multiply(newRotationMat, vMatrix, vMatrix);
+                    mat4.rotate(newRotationMat, deg2Rad(-deltaX/10), [0, 1, 0]);
+                    mat4.rotate(newRotationMat, deg2Rad(-deltaY/10), [1, 0, 0]);
+                    mat4.multiply(newRotationMat, mouseRotationMatrix, mouseRotationMatrix);
 
                 }
 
                 if(mouseButtons[1])
                 {
                     //Mid button
-                    vec3.translate(keysTranslation, [-deltaX/20, deltaY/20, 0]);
+                    var newMat = mat4.create();
+                    mat4.identity(newMat);
+                    mat4.translate(newMat, [-deltaX/100, deltaY/100,  0.0]);
+                    mat4.multiply(newMat, mouseRotationMatrix, mouseRotationMatrix);
 
                 }
 
@@ -747,7 +754,7 @@
                     //R key
                     //TODO: More resets
                     fov = 45;
-                    mat4.identity(vMatrix);
+                    mat4.identity(mouseRotationMatrix);
                 }
             }
 
