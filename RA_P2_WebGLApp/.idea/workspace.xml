@@ -21,8 +21,8 @@
       <file leaf-file-name="webGLApp.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/webGLApp.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="564">
-              <caret line="613" column="18" lean-forward="false" selection-start-line="613" selection-start-column="18" selection-end-line="613" selection-end-column="18" />
+            <state relative-caret-position="680">
+              <caret line="90" column="36" lean-forward="true" selection-start-line="90" selection-start-column="36" selection-end-line="90" selection-end-column="36" />
               <folding>
                 <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
                 <element signature="n#script#4;n#head#0;n#html#0;n#!!top" expanded="false" />
@@ -220,11 +220,12 @@
       <workItem from="1493815894605" duration="14172000" />
       <workItem from="1493896411456" duration="11463000" />
       <workItem from="1493919276192" duration="318000" />
+      <workItem from="1494007137601" duration="207000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49936000" />
+    <option name="totallyTimeSpent" value="50143000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="953" y="0" width="974" height="1047" extended-state="0" />
@@ -1264,8 +1265,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webGLApp.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="564">
-          <caret line="613" column="18" lean-forward="false" selection-start-line="613" selection-start-column="18" selection-end-line="613" selection-end-column="18" />
+        <state relative-caret-position="680">
+          <caret line="90" column="36" lean-forward="true" selection-start-line="90" selection-start-column="36" selection-end-line="90" selection-end-column="36" />
           <folding>
             <element signature="n#script#3;n#head#0;n#html#0;n#!!top" expanded="false" />
             <element signature="n#script#4;n#head#0;n#html#0;n#!!top" expanded="false" />

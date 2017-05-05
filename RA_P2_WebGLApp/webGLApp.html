@@ -80,8 +80,8 @@
                 vertPositionEye = uMVMatrix * vec4(aVertexPosition, 1.0);
                 gl_Position = uPMatrix * vertPositionEye;
                 vertNormalEye = uNMatrix * normalize(aVertexNormal);
-                //lightSourcePositionEye = uMVMatrix * vec4(uLightSourcePosition, 1.0);
-                lightSourcePositionEye = vec4(uLightSourcePosition, 1.0);
+                lightSourcePositionEye = uMVMatrix * vec4(uLightSourcePosition, 1.0);
+                //lightSourcePositionEye = vec4(uLightSourcePosition, 1.0);
             }
         </script>
 
